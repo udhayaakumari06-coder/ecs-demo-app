@@ -1,5 +1,5 @@
 const http = require("http");
 
 http.createServer((req, res) => {
-  res.end("Hello CI/CD Deployment ");
+  res.end("Hello Auto Deploy ");
 }).listen(80);
