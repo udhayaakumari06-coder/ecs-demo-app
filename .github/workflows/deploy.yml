@@ -10,25 +10,33 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: eu-north-1
 
-      - name: Login to ECR
+      - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region eu-north-1 \
           | docker login --username AWS --password-stdin 625693792692.dkr.ecr.eu-north-1.amazonaws.com
 
-      - name: Build image
+      - name: Build Docker image
         run: docker build -t my-app .
 
-      - name: Tag image
+      - name: Tag Docker image
         run: docker tag my-app:latest 625693792692.dkr.ecr.eu-north-1.amazonaws.com/my-app:latest
 
-      - name: Push image
+      - name: Push Docker image to ECR
         run: docker push 625693792692.dkr.ecr.eu-north-1.amazonaws.com/my-app:latest
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster my-cluster1 \
+            --service my-service \
+            --force-new-deployment \
+            --region eu-north-1
