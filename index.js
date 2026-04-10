@@ -1,5 +1,5 @@
 const http = require("http");
 
 http.createServer((req, res) => {
-  res.end("Hello Auto Deploy ");
+  res.end("Hello from ECS ");
 }).listen(80);
